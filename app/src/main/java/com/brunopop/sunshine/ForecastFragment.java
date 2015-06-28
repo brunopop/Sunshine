@@ -33,6 +33,7 @@ import java.util.Arrays;
 public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> mForecastAdapter;
+    private final String ZIP_CODE = "02135";
 
     public ForecastFragment() {
     }
@@ -49,12 +50,7 @@ public class ForecastFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         String[] forecastArray = {
-                "Today - Sunny - 88/63",
-                "Tomorrow - Foggy - 70/46",
-                "Wed - Cloudy - 72/63",
-                "Thu - Rainy - 64/51",
-                "Fri - Foggy - 70/46",
-                "Sat - Sunny - 76/68"
+                "No Weather Data"
         };
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
@@ -72,6 +68,12 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        fetchWeather(ZIP_CODE);
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
     }
@@ -80,13 +82,15 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            String zipCode = "94043";
-            FetchWeatherTask task = new FetchWeatherTask();
-            task.execute(zipCode);
-
+            fetchWeather(ZIP_CODE);
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void fetchWeather(String zipCode) {
+        FetchWeatherTask task = new FetchWeatherTask();
+        task.execute(zipCode);
     }
 
     public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
