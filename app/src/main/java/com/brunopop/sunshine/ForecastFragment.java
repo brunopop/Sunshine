@@ -32,6 +32,8 @@ import java.util.Arrays;
  */
 public class ForecastFragment extends Fragment {
 
+    private ArrayAdapter<String> mForecastAdapter;
+
     public ForecastFragment() {
     }
 
@@ -57,22 +59,20 @@ public class ForecastFragment extends Fragment {
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
         Context context = getActivity();
-        ArrayAdapter<String> forecastAdapter = new ArrayAdapter<String>(
+        mForecastAdapter = new ArrayAdapter<String>(
                 context,
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
                 weekForecast);
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        listView.setAdapter(forecastAdapter);
+        listView.setAdapter(mForecastAdapter);
 
         return rootView;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //super.onCreateOptionsMenu(menu, inflater);
-        //menu.clear();
         inflater.inflate(R.menu.forecastfragment, menu);
     }
 
@@ -81,9 +81,9 @@ public class ForecastFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             String zipCode = "94043";
-
             FetchWeatherTask task = new FetchWeatherTask();
             task.execute(zipCode);
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -171,5 +171,14 @@ public class ForecastFragment extends Fragment {
             return resultStrings;
         }
 
+        @Override
+        protected void onPostExecute(String[] forecastStrings) {
+            if (forecastStrings != null) {
+                mForecastAdapter.clear();
+                for (String s : forecastStrings) {
+                    mForecastAdapter.add(s);
+                }
+            }
+        }
     }
 }

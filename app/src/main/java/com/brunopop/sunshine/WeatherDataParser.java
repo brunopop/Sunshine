@@ -121,10 +121,6 @@ public class WeatherDataParser {
             highAndLow = formatHighLows(high, low);
             resultStrings[i] = day + " - " + description + " - " + highAndLow;
         }
-
-        for (String s : resultStrings) {
-            Log.v(LOG_TAG, "Forecast entry: " + s);
-        }
         return resultStrings;
 
     }
