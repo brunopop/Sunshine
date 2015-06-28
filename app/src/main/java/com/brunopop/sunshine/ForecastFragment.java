@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,12 +89,12 @@ public class ForecastFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchWeatherTask extends AsyncTask<String,Void,Void> {
+    public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -101,6 +103,8 @@ public class ForecastFragment extends Fragment {
             String format = "json";
             String units = "metric";
             int numDays = 7;
+
+            String[] resultStrings = null;
 
             // "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7"
             Uri.Builder builder = new Uri.Builder();
@@ -125,7 +129,7 @@ public class ForecastFragment extends Fragment {
 
                 // Read input into a string
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     return null;
                 }
@@ -133,7 +137,7 @@ public class ForecastFragment extends Fragment {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
+                    buffer.append(line).append("\n");
                 }
 
                 if (buffer.length() == 0) {
@@ -156,8 +160,15 @@ public class ForecastFragment extends Fragment {
                     }
                 }
             }
-            Log.v(LOG_TAG,"Forecast: " + forecastJsonStr);
-            return null;
+
+            try {
+                resultStrings = (new WeatherDataParser()).getWeatherDataFromJson(forecastJsonStr,numDays);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            return resultStrings;
         }
 
     }
