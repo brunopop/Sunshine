@@ -2,8 +2,10 @@ package com.brunopop.sunshine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,8 +39,9 @@ import java.util.Arrays;
  */
 public class ForecastFragment extends Fragment {
 
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ArrayAdapter<String> mForecastAdapter;
-    private final String ZIP_CODE = "02135";
+    private final String DEFAULT_ZIP_CODE = "02135";
 
     public ForecastFragment() {
     }
@@ -85,7 +88,7 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        fetchWeather(ZIP_CODE);
+        fetchWeather();
     }
 
     @Override
@@ -97,15 +100,19 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            fetchWeather(ZIP_CODE);
+            fetchWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void fetchWeather(String zipCode) {
+    private void fetchWeather() {
         FetchWeatherTask task = new FetchWeatherTask();
-        task.execute(zipCode);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPreferences.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        task.execute(location);
     }
 
     public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
