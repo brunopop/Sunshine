@@ -8,4 +8,20 @@
     <string name="pref_location_key" translatable="false">Location</string>
     <string name="pref_location_label">Location</string>
     <string name="pref_location_default" translatable="false">02135</string>
+
+    <string name="pref_unit_key" translatable="false">Unit</string>
+    <string name="pref_unit_label">Temperature Unit</string>
+    <string name="pref_unit_default">Metric</string>
+
+    <string-array
+        name="pref_unit_entries">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array
+        name="pref_unit_values">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
 </resources>

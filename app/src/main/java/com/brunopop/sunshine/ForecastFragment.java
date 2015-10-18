@@ -118,7 +118,6 @@ public class ForecastFragment extends Fragment {
     public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-        private final String API_KEY = "242361ec868dc3db20279d6a5fb627cf";
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -128,8 +127,12 @@ public class ForecastFragment extends Fragment {
             String forecastJsonStr = null;
 
             String format = "json";
-            String units = "metric";
             int numDays = 7;
+
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String units = sharedPreferences.getString(
+                    getString(R.string.pref_unit_key),
+                    getString(R.string.pref_unit_default));
 
             String[] resultStrings = null;
 
@@ -146,7 +149,7 @@ public class ForecastFragment extends Fragment {
                     .appendQueryParameter("mode", format)
                     .appendQueryParameter("units", units)
                     .appendQueryParameter("cnt", Integer.toString(numDays))
-                    .appendQueryParameter("APPID", API_KEY);
+                    .appendQueryParameter("APPID", getString(R.string.api_key));
             String myUrl = builder.build().toString();
 
             try {
