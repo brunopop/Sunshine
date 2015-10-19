@@ -102,17 +102,32 @@ public class ForecastFragment extends Fragment {
         if (id == R.id.action_refresh) {
             fetchWeather();
             return true;
+        } else if (id == R.id.action_view_location) {
+            Uri geoLocation = Uri.parse("geo:0,0?q=" + Uri.encode(getPreferredLocation()));
+            showMap(geoLocation);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void showMap(Uri geoLocation) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
+        }
+    }
+
     private void fetchWeather() {
         FetchWeatherTask task = new FetchWeatherTask();
+        task.execute(getPreferredLocation());
+    }
+
+    private String getPreferredLocation() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPreferences.getString(
+        return sharedPreferences.getString(
                 getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
-        task.execute(location);
     }
 
     public class FetchWeatherTask extends AsyncTask<String,Void,String[]> {
