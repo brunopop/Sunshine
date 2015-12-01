@@ -18,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.w3c.dom.Text;
@@ -41,7 +39,6 @@ public class ForecastFragment extends Fragment {
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ArrayAdapter<String> mForecastAdapter;
-    private final String DEFAULT_ZIP_CODE = "02135";
 
     public ForecastFragment() {
     }
@@ -75,7 +72,6 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String forecast = mForecastAdapter.getItem(position);
-                //Toast.makeText(getActivity(),forecast, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, forecast);
                 startActivity(intent);
@@ -103,7 +99,9 @@ public class ForecastFragment extends Fragment {
             fetchWeather();
             return true;
         } else if (id == R.id.action_view_location) {
-            Uri geoLocation = Uri.parse("geo:0,0?q=" + Uri.encode(getPreferredLocation()));
+            Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                    .appendQueryParameter("q", getPreferredLocation())
+                    .build();
             showMap(geoLocation);
             return true;
         }
@@ -115,6 +113,8 @@ public class ForecastFragment extends Fragment {
         intent.setData(geoLocation);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivity(intent);
+        } else {
+            Log.d(LOG_TAG, "Couldn't start Map activity.");
         }
     }
 
